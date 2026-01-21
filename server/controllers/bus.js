@@ -34,7 +34,7 @@ exports.getLiveBusLocations = async (req, res, next) => {
         // Get latest location for each bus
         // Aggregation is best here, or just query all buses and find latest loc.
         // Optimization: Store lastLocation ref in Bus model, but for now:
-        const buses = await Bus.find().populate('route');
+        const buses = await Bus.find();
 
         const liveData = await Promise.all(buses.map(async (bus) => {
             const lastLoc = await BusLocation.findOne({ bus: bus._id }).sort({ timestamp: -1 });
@@ -57,6 +57,16 @@ exports.createBus = async (req, res, next) => {
     try {
         const { busNumber, driverName, route, capacity, deviceId } = req.body;
         const bus = await Bus.create({ busNumber, driverName, route, capacity, deviceId });
+
+        // Create initial default location so it appears on map immediately
+        // Default Lat/Lng (Trivandrum)
+        await BusLocation.create({
+            bus: bus._id,
+            lat: 8.5241,
+            lng: 76.9366,
+            speed: 0
+        });
+
         res.status(201).json({ success: true, data: bus });
     } catch (err) {
         next(err);
@@ -74,7 +84,9 @@ exports.getBuses = async (req, res, next) => {
         next(err);
     }
 };
+await BusLocation.deleteMany({ bus: bus._id }); // Cleanup locations
 
+        
 // @desc    Delete a bus
 // @route   DELETE /api/bus/:id
 // @access  Private (Admin)

@@ -65,9 +65,9 @@ export default function BusTracking() {
                                 position={[item.location.lat, item.location.lng]}
                             >
                                 <Popup>
-                                    <div className="p-1 min-w-[150px]">
-                                        <h3 className="font-bold text-gray-900">Bus {item.bus.busNumber}</h3>
-                                        <p className="text-sm">Driver: {item.bus.driverName}</p>
+                                    <div className="p-1" style={{ minWidth: '150px' }}>
+                                        <h3 className="font-bold text-gray-900">Bus {item.bus?.busNumber}</h3>
+                                        <p className="text-sm">Driver: {item.bus?.driverName}</p>
                                         <p className="text-xs text-gray-500 mt-1 flex items-center">
                                             <Clock className="w-3 h-3 mr-1" />
                                             Updated: {new Date(item.location.timestamp).toLocaleTimeString()}

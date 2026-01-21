@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const colors = require('colors');
 const User = require('./models/User');
+const { Bus, BusLocation } = require('./models/Bus');
 const path = require('path');
 
 // Load env vars
@@ -17,17 +18,7 @@ const users = [
         role: 'admin'
     },
     {
-        name: 'Teacher One',
-        email: 'teacher@test.com',
-        password: 'password123',
-        role: 'teacher',
-        teacherDetails: {
-            department: 'Computer Science',
-            designation: 'HOD'
-        }
-    },
-    {
-        name: 'Student One',
+        name: 'Student User',
         email: 'student@test.com',
         password: 'password123',
         role: 'student',
@@ -39,11 +30,49 @@ const users = [
     }
 ];
 
+const buses = [
+    {
+        busNumber: 'BUS-01',
+        driverName: 'Ramesh Kumar',
+        driverPhone: '9876543210',
+        route: 'City Center to Campus',
+        capacity: 50
+    },
+    {
+        busNumber: 'BUS-02',
+        driverName: 'Suresh Singh',
+        driverPhone: '9876543211',
+        route: 'Station to Campus',
+        capacity: 40
+    }
+];
+
 const importData = async () => {
     try {
         await User.deleteMany();
+        await Bus.deleteMany();
+        await BusLocation.deleteMany();
 
         await User.create(users);
+        const createdBuses = await Bus.create(buses);
+
+        // Seed initial locations
+        const locations = [
+            {
+                bus: createdBuses[0]._id,
+                lat: 8.5241, 
+                lng: 76.9366,
+                speed: 40
+            },
+            {
+                bus: createdBuses[1]._id,
+                lat: 8.5291, 
+                lng: 76.9400,
+                speed: 35
+            }
+        ];
+        
+        await BusLocation.create(locations);
 
         console.log('Data Imported...'.green.inverse);
         process.exit();
@@ -56,6 +85,8 @@ const importData = async () => {
 const deleteData = async () => {
     try {
         await User.deleteMany();
+        await Bus.deleteMany();
+        await BusLocation.deleteMany();
 
         console.log('Data Destroyed...'.red.inverse);
         process.exit();
