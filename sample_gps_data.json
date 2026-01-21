@@ -1,0 +1,24 @@
+[
+    {
+        "busNumber": "KA-01-A-1234",
+        "deviceId": "GPS001",
+        "route": "Route 1 - Downtown",
+        "location": {
+            "lat": 28.6139,
+            "lng": 77.2090,
+            "speed": 45,
+            "timestamp": "2023-10-27T10:00:00Z"
+        }
+    },
+    {
+        "busNumber": "KA-01-B-5678",
+        "deviceId": "GPS002",
+        "route": "Route 2 - Suburbs",
+        "location": {
+            "lat": 28.5355,
+            "lng": 77.3910,
+            "speed": 30,
+            "timestamp": "2023-10-27T10:05:00Z"
+        }
+    }
+]
