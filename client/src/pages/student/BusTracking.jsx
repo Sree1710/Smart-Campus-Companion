@@ -13,8 +13,8 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// Fallback center (College Campus)
-const defaultCenter = [28.6139, 77.2090]; // New Delhi example (Lat, Lng)
+// Fallback center (Trivandrum)
+const defaultCenter = [8.5241, 76.9366]; // Trivandrum Coordinates
 
 export default function BusTracking() {
     const [buses, setBuses] = useState([]);
@@ -23,10 +23,19 @@ export default function BusTracking() {
         try {
             const res = await axios.get("http://localhost:5001/api/bus/live");
             setBuses(res.data.data);
+            // Optionally auto-center on first bus if available
+            // if (res.data.data.length > 0 && res.data.data[0].location) {
+            //     // logic to set center
+            // }
         } catch (err) {
             console.error(err);
         }
     };
+
+    // Add effect to log successful load
+    useEffect(() => {
+        if (buses.length > 0) console.log("Buses loaded:", buses.length);
+    }, [buses]);
 
     useEffect(() => {
         fetchBusLocations();

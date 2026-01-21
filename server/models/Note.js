@@ -6,6 +6,20 @@ const NoteSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    type: {
+        type: String,
+        enum: ['personal', 'assignment', 'lecture_note'],
+        default: 'personal' // 'personal' for students, others for teachers
+    },
+    class: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class' // Required if type is assignment/lecture_note
+    },
+    subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject' // Optional context
+    },
+    dueDate: Date, // Valid only for assignments
     title: String,
     content: String,
     tags: [String],

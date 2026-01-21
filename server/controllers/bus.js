@@ -49,3 +49,43 @@ exports.getLiveBusLocations = async (req, res, next) => {
         next(err);
     }
 };
+
+// @desc    Add a new bus
+// @route   POST /api/bus
+// @access  Private (Admin)
+exports.createBus = async (req, res, next) => {
+    try {
+        const { busNumber, driverName, route, capacity, deviceId } = req.body;
+        const bus = await Bus.create({ busNumber, driverName, route, capacity, deviceId });
+        res.status(201).json({ success: true, data: bus });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Get all buses (Management view)
+// @route   GET /api/bus
+// @access  Private (Admin)
+exports.getBuses = async (req, res, next) => {
+    try {
+        const buses = await Bus.find();
+        res.status(200).json({ success: true, data: buses });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Delete a bus
+// @route   DELETE /api/bus/:id
+// @access  Private (Admin)
+exports.deleteBus = async (req, res, next) => {
+    try {
+        const bus = await Bus.findById(req.params.id);
+        if (!bus) return res.status(404).json({ success: false, message: 'Bus not found' });
+
+        await bus.deleteOne();
+        res.status(200).json({ success: true, data: {} });
+    } catch (err) {
+        next(err);
+    }
+};

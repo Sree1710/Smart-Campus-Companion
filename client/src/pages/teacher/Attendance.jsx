@@ -16,7 +16,7 @@ export default function TeacherAttendance() {
 
     const fetchSubjects = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/academic/subjects");
+            const res = await axios.get("http://localhost:5001/api/academic/subjects");
             setSubjects(res.data.data);
         } catch (err) {
             console.error(err);
@@ -24,17 +24,37 @@ export default function TeacherAttendance() {
     };
 
     const handleFetchStudents = async () => {
-        if (!selectedSubject) return;
+        console.log("Load Students Clicked. Selected Subject ID:", selectedSubject);
+        if (!selectedSubject) {
+            toast.error("Please select a subject first");
+            return;
+        }
         setLoading(true);
         try {
             const subject = subjects.find(s => s._id === selectedSubject);
-            if (!subject) return;
+            console.log("Selected Subject Object:", subject);
 
-            const res = await axios.get(`http://localhost:5001/api/academic/classes/${subject.class._id}/students`); // Assuming subject.class is populated or is ID
-            // Note: My backend populates subject.class as { _id, name } in getSubjects
+            if (!subject) {
+                console.error("Subject not found in list");
+                return;
+            }
 
+            if (!subject.class || !subject.class._id) {
+                console.error("Subject has no linked class:", subject);
+                toast.error("Error: This subject is not linked to a valid class.");
+                return;
+            }
+
+            console.log("Fetching students for Class ID:", subject.class._id);
+            const res = await axios.get(`http://localhost:5001/api/academic/classes/${subject.class._id}/students`);
+
+            console.log("Students Fetched:", res.data.data);
             const studentList = res.data.data;
             setStudents(studentList);
+
+            if (studentList.length === 0) {
+                toast("No students found in this class", { icon: '⚠️' });
+            }
 
             // Initialize attendance state
             const initial = {};
@@ -59,7 +79,7 @@ export default function TeacherAttendance() {
                 remarks: attendance[s._id].remarks
             }));
 
-            await axios.post("http://localhost:5000/api/attendance", {
+            await axios.post("http://localhost:5001/api/attendance", {
                 date,
                 subject: selectedSubject,
                 classId: subject.class._id,

@@ -18,11 +18,9 @@ const BusSchema = new mongoose.Schema({
     busNumber: { type: String, required: true, unique: true },
     driverName: String,
     driverPhone: String,
-    route: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'BusRoute'
-    },
-    deviceId: { type: String, required: true, unique: true } // For matching sensor data
+    route: { type: String }, // Simplified to String for now
+    deviceId: { type: String }, // Optional
+    capacity: { type: Number, default: 40 }
 });
 
 const Bus = mongoose.model('Bus', BusSchema);

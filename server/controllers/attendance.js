@@ -48,9 +48,60 @@ exports.markAttendance = async (req, res, next) => {
 // @access  Teacher, Admin
 exports.getClassAttendance = async (req, res, next) => {
     try {
-        const attendance = await Attendance.find({ class: req.params.classId })
+        let query = { class: req.params.classId };
+
+        if (req.query.date) {
+            query.date = {
+                $gte: new Date(new Date(req.query.date).setHours(0, 0, 0)),
+                $lt: new Date(new Date(req.query.date).setHours(23, 59, 59))
+            };
+        }
+
+        const attendance = await Attendance.find(query)
             .populate('subject', 'name')
-            .populate('records.student', 'name email');
+            .populate('records.student', 'name studentDetails'); // Populate student details for UI
+
+        // If filtering by date, we might want to flatten the structure if multiple subjects?
+        // But for "View Class Attendance", returning the docs (one per subject) is fine.
+        // Frontend will map over them.
+
+        // If we want a flattened list of "Student | Status (Sub1) | Status (Sub2)", that's complex UI.
+        // For now, returning the raw attendance docs is sufficient for the requested "View" capability.
+        // However, the ViewAttendance.jsx I wrote expects a flat list of records?
+        // No, it maps `attendanceData`.
+        // Let's look at ViewAttendance.jsx logic again.
+        // It maps `attendanceData` -> `record`. and accesses `record.student?.name`.
+        // BUT `data` from backend (Attendance Model) is `[{ records: [ {student, status}, ... ] }]`.
+        // My `ViewAttendance.jsx` is assuming a flat list of logic like "Student 1 - Present".
+        // Actually, if we view by date, we get multiple Docs (one for each subject).
+        // My frontend implementation should probably handle this structure.
+
+        // Let's flatten the response for the frontend "View by Date" use case?
+        // OR update the frontend to handle the nested structure.
+        // Let's update backend to return what frontend expects? 
+        // Iterate through docs, and collect all student statuses?
+
+        // Simpler: Return the docs. Let frontend display "Subject: Math -> Table of students".
+        // But my frontend `ViewAttendance.jsx` table columns are: Student, Status, Remarks, Subject.
+        // It iterates `attendanceData.map`.
+        // If `attendanceData` is `[ { subject:..., records: [...] } ]`, then mapping it directly won't work as expected if I want one row per student per subject.
+        // Effectively I need to "unwind" the records.
+
+        let flatRecords = [];
+        if (req.query.date) {
+            attendance.forEach(doc => {
+                doc.records.forEach(rec => {
+                    flatRecords.push({
+                        _id: rec._id,
+                        student: rec.student,
+                        status: rec.status,
+                        remarks: rec.remarks,
+                        subject: doc.subject
+                    });
+                });
+            });
+            return res.status(200).json({ success: true, data: flatRecords });
+        }
 
         res.status(200).json({ success: true, data: attendance });
     } catch (err) {

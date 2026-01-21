@@ -14,7 +14,7 @@ const Login = () => {
         const res = await login(email, password);
         if (res.success) {
             toast.success("Logged in successfully");
-            navigate("/"); // Will redirect based on role in App.jsx or dashboard
+            navigate("/dashboard"); // Will redirect based on role in App.jsx or dashboard
         } else {
             toast.error(res.error);
         }
@@ -25,7 +25,7 @@ const Login = () => {
             <div className="w-full max-w-md space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-                        Sign in to SCC
+                        Sign in to campusO
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{" "}
@@ -79,6 +79,11 @@ const Login = () => {
                         </button>
                     </div>
                 </form>
+                <div className="text-center">
+                    <Link to="/" className="text-sm text-gray-500 hover:text-gray-900">
+                        &larr; Back to Home
+                    </Link>
+                </div>
             </div>
         </div>
     );

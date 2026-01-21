@@ -21,7 +21,7 @@ const Register = () => {
         const res = await register(formData);
         if (res.success) {
             toast.success("Registered successfully");
-            navigate("/");
+            navigate("/dashboard");
         } else {
             toast.error(res.error);
         }
@@ -75,9 +75,75 @@ const Register = () => {
                             >
                                 <option value="student">Student</option>
                                 <option value="teacher">Teacher</option>
-                                {/* Admin registration usually restricted */}
                             </select>
                         </div>
+
+                        {/* Dynamic Fields */}
+                        {formData.role === 'student' && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Class (e.g., CS-A)</label>
+                                    <input
+                                        name="className"
+                                        type="text"
+                                        required
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 px-3"
+                                        value={formData.className || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Roll Number</label>
+                                    <input
+                                        name="rollNumber"
+                                        type="text"
+                                        required
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 px-3"
+                                        value={formData.rollNumber || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {formData.role === 'teacher' && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Teaching Class (e.g., CS-A)</label>
+                                    <input
+                                        name="className"
+                                        type="text"
+                                        required
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 px-3"
+                                        value={formData.className || ''}
+                                        onChange={handleChange}
+                                        placeholder="Class assigned to you"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Subject Name (e.g., Mathematics)</label>
+                                    <input
+                                        name="subjectName"
+                                        type="text"
+                                        required
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 px-3"
+                                        value={formData.subjectName || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Subject Code (e.g., M101)</label>
+                                    <input
+                                        name="subjectCode"
+                                        type="text"
+                                        required
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 px-3"
+                                        value={formData.subjectCode || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </>
+                        )}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Password</label>
                             <input
@@ -100,6 +166,11 @@ const Register = () => {
                         </button>
                     </div>
                 </form>
+                <div className="text-center">
+                    <Link to="/" className="text-sm text-gray-500 hover:text-gray-900">
+                        &larr; Back to Home
+                    </Link>
+                </div>
             </div>
         </div>
     );

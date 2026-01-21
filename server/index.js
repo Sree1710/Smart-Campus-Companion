@@ -65,6 +65,7 @@ app.use('/api/notices', noticeRouter);
 app.use('/api/notes', noteRouter);
 app.use('/api/bus', busRouter);
 app.use('/api/academic', academicRouter);
+app.use('/api/users', require('./routes/users'));
 
 // Routes (Placeholder)
 app.get('/', (req, res) => {

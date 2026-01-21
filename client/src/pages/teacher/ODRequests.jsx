@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function ODRequests() {
     const [requests, setRequests] = useState([]);
+    const { user } = useContext(AuthContext); // Get user for role check
 
     useEffect(() => {
         fetchRequests();
@@ -30,7 +32,9 @@ export default function ODRequests() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">Pending Duty Leave Requests</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+                {user.role === 'admin' ? "View Duty Leave Requests" : "Pending Duty Leave Requests"}
+            </h1>
 
             <div className="grid gap-6">
                 {requests.length === 0 && <p className="text-gray-500">No pending requests.</p>}
@@ -48,13 +52,21 @@ export default function ODRequests() {
                                     <a href={req.proofUrl} target="_blank" rel="noreferrer" className="text-blue-500 text-sm underline mt-2 block">View Proof</a>
                                 )}
                             </div>
-                            <div className="flex flex-col space-y-2">
-                                <button onClick={() => handleAction(req._id, 'Approved', 'Approved by Teacher')} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 text-sm">Approve</button>
-                                <button onClick={() => {
-                                    const reason = prompt("Reason for rejection:");
-                                    if (reason) handleAction(req._id, 'Rejected', reason);
-                                }} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 text-sm">Reject</button>
-                            </div>
+                            {/* Only show actions if Teacher */}
+                            {user.role === 'teacher' && (
+                                <div className="flex flex-col space-y-2">
+                                    <button onClick={() => handleAction(req._id, 'Approved', 'Approved by Teacher')} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 text-sm">Approve</button>
+                                    <button onClick={() => {
+                                        const reason = prompt("Reason for rejection:");
+                                        if (reason) handleAction(req._id, 'Rejected', reason);
+                                    }} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 text-sm">Reject</button>
+                                </div>
+                            )}
+                            {user.role === 'admin' && (
+                                <div className="flex flex-col space-y-2">
+                                    <span className="px-3 py-1 bg-gray-100 text-gray-500 text-xs rounded">View Only</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
