@@ -6,58 +6,69 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 
-// Load env vars
-dotenv.config({ path: path.join(__dirname, '.env') });
+// Load environment variables (Render + Local compatible)
+dotenv.config();
 
 const connectDB = require('./config/db');
 
-// Connect to database
+// Connect to MongoDB
 connectDB();
 
 const app = express();
 
-// Middleware
-// Middleware
-// Manual CORS to fix persistent 403s with library
+/**
+ * =========================
+ * CORS CONFIGURATION
+ * =========================
+ * Allows Vercel frontend + other trusted origins
+ */
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  console.log(`[DEBUG] Request Method: ${req.method}, Origin: ${origin}`);
 
-  // Allow all origins or reflect request origin
   if (origin) {
     res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    // Fallback for non-browser tools
-    res.header('Access-Control-Allow-Origin', '*');
   }
 
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With'
+  );
   res.header('Access-Control-Allow-Credentials', 'true');
 
-  // Explicitly log the decision for debugging
-  console.log(`[DEBUG] Allowed Origin: ${res.get('Access-Control-Allow-Origin')}`);
-
   if (req.method === 'OPTIONS') {
-    console.log('[DEBUG] Handling OPTIONS preflight');
-    return res.status(200).send();
+    return res.sendStatus(200);
   }
-  console.log('[DEBUG] Passing control to next middleware');
+
   next();
 });
 
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(helmet()); 
+
+// Security & logging
+// app.use(helmet()); // Enable later if needed
 app.use(morgan('dev'));
 
 // Static folder for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+/**
+ * =========================
+ * ROUTES
+ * =========================
+ */
 const auth = require('./routes/auth');
-const { attendanceRouter, odRouter, noticeRouter, noteRouter, busRouter, academicRouter } = require('./routes/core');
+const {
+  attendanceRouter,
+  odRouter,
+  noticeRouter,
+  noteRouter,
+  busRouter,
+  academicRouter
+} = require('./routes/core');
 
-// Mount routers
 app.use('/api/auth', auth);
 app.use('/api/attendance', attendanceRouter);
 app.use('/api/od', odRouter);
@@ -67,22 +78,49 @@ app.use('/api/bus', busRouter);
 app.use('/api/academic', academicRouter);
 app.use('/api/users', require('./routes/users'));
 
-// Routes (Placeholder)
-app.get('/', (req, res) => {
-  res.send('API is running...');
+/**
+ * =========================
+ * HEALTH CHECK
+ * =========================
+ */
+app.get('/api/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Backend is live and running on Render 🚀',
+  });
 });
 
-// Error Handling Middleware
+/**
+ * =========================
+ * ROOT ROUTE
+ * =========================
+ */
+app.get('/', (req, res) => {
+  res.send('Smart Campus Companion API is running...');
+});
+
+/**
+ * =========================
+ * ERROR HANDLING
+ * =========================
+ */
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    message: err.message || 'Server Error',
+    message: err.message || 'Internal Server Error',
   });
 });
 
+/**
+ * =========================
+ * SERVER START
+ * =========================
+ */
 const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(
+    `Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+  );
 });

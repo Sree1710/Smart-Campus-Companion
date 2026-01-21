@@ -84,9 +84,7 @@ exports.getBuses = async (req, res, next) => {
         next(err);
     }
 };
-await BusLocation.deleteMany({ bus: bus._id }); // Cleanup locations
 
-        
 // @desc    Delete a bus
 // @route   DELETE /api/bus/:id
 // @access  Private (Admin)
@@ -96,6 +94,8 @@ exports.deleteBus = async (req, res, next) => {
         if (!bus) return res.status(404).json({ success: false, message: 'Bus not found' });
 
         await bus.deleteOne();
+        await BusLocation.deleteMany({ bus: bus._id }); // Cleanup locations
+
         res.status(200).json({ success: true, data: {} });
     } catch (err) {
         next(err);
