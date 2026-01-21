@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import { Bus, Clock } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -21,7 +21,7 @@ export default function BusTracking() {
 
     const fetchBusLocations = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/bus/live");
+            const res = await api.get("/bus/live");
             setBuses(res.data.data);
             // Optionally auto-center on first bus if available
             // if (res.data.data.length > 0 && res.data.data[0].location) {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 import { Plus, Calendar, Clock } from "lucide-react";
 
@@ -23,7 +23,7 @@ export default function DutyLeave() {
 
     const fetchODs = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/od/my");
+            const res = await api.get("/od/my");
             setOds(res.data.data);
         } catch (err) {
             console.error(err);
@@ -35,7 +35,7 @@ export default function DutyLeave() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5001/api/od", formData);
+            await api.post("/od", formData);
             toast.success("OD Request Submitted");
             setShowModal(false);
             fetchODs();
@@ -84,7 +84,7 @@ export default function DutyLeave() {
                         <p className="mt-1 text-sm text-gray-500 line-clamp-2">{od.description}</p>
 
                         <div className="mt-4 flex items-center text-sm text-gray-500">
-                            <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                            <Calendar className="mr-1.5 h-4 w-4 shrink-0 text-gray-400" />
                             <span>{new Date(od.fromDate).toLocaleDateString()} - {new Date(od.toDate).toLocaleDateString()}</span>
                         </div>
 

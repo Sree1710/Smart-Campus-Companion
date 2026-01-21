@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 
 export default function TeacherAttendance() {
@@ -16,7 +16,7 @@ export default function TeacherAttendance() {
 
     const fetchSubjects = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/academic/subjects");
+            const res = await api.get("/academic/subjects");
             setSubjects(res.data.data);
         } catch (err) {
             console.error(err);
@@ -46,7 +46,7 @@ export default function TeacherAttendance() {
             }
 
             console.log("Fetching students for Class ID:", subject.class._id);
-            const res = await axios.get(`http://localhost:5001/api/academic/classes/${subject.class._id}/students`);
+            const res = await api.get(`/academic/classes/${subject.class._id}/students`);
 
             console.log("Students Fetched:", res.data.data);
             const studentList = res.data.data;
@@ -79,7 +79,7 @@ export default function TeacherAttendance() {
                 remarks: attendance[s._id].remarks
             }));
 
-            await axios.post("http://localhost:5001/api/attendance", {
+            await api.post("/attendance", {
                 date,
                 subject: selectedSubject,
                 classId: subject.class._id,

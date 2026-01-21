@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 
@@ -14,7 +14,7 @@ export default function Notices() {
 
     const fetchNotices = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/notices");
+            const res = await api.get("/notices");
             setNotices(res.data.data);
         } catch (err) {
             console.error(err);
@@ -24,7 +24,7 @@ export default function Notices() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5001/api/notices", formData);
+            await api.post("/notices", formData);
             toast.success("Notice Posted");
             setShowModal(false);
             fetchNotices();

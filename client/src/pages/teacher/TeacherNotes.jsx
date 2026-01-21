@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 import { Plus, Trash2, Tag, Calendar, BookOpen } from "lucide-react";
 
@@ -25,7 +25,7 @@ export default function TeacherNotes() {
 
     const fetchNotes = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/notes");
+            const res = await api.get("/notes");
             setNotes(res.data.data);
         } catch (err) {
             console.error(err);
@@ -34,14 +34,14 @@ export default function TeacherNotes() {
 
     const fetchClasses = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/academic/classes");
+            const res = await api.get("/academic/classes");
             setClasses(res.data.data);
         } catch (err) { console.error(err); }
     };
 
     const fetchSubjects = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/academic/subjects");
+            const res = await api.get("/academic/subjects");
             setSubjects(res.data.data);
         } catch (err) { console.error(err); }
     };
@@ -51,7 +51,7 @@ export default function TeacherNotes() {
         try {
             if (!selectedClass) return toast.error("Please select a class");
 
-            await axios.post("http://localhost:5001/api/notes", {
+            await api.post("/notes", {
                 title,
                 content,
                 type,
@@ -74,7 +74,7 @@ export default function TeacherNotes() {
     const handleDelete = async (id) => {
         if (!confirm("Are you sure?")) return;
         try {
-            await axios.delete(`http://localhost:5001/api/notes/${id}`);
+            await api.delete(`/notes/${id}`);
             toast.success("Deleted");
             fetchNotes();
         } catch (err) {

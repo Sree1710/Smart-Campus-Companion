@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import { Bus, Plus, Trash, User } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -16,10 +16,11 @@ export default function ManageBuses() {
 
     const fetchBuses = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/bus");
+            const res = await api.get("/bus");
             setBuses(res.data.data);
         } catch (err) {
             console.error(err);
+
             toast.error("Failed to fetch buses");
         }
     };
@@ -31,7 +32,7 @@ export default function ManageBuses() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5001/api/bus", formData);
+            await api.post("/bus", formData);
             toast.success("Bus Created");
             setShowModal(false);
             setFormData({ busNumber: "", driverName: "", route: "", capacity: 40, deviceId: "" });
@@ -45,7 +46,7 @@ export default function ManageBuses() {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this bus?")) return;
         try {
-            await axios.delete(`http://localhost:5001/api/bus/${id}`);
+            await api.delete(`/bus/${id}`);
             toast.success("Bus Deleted");
             fetchBuses();
         } catch (err) {

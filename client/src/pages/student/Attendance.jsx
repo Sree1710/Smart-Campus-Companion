@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import { UserCheck, XCircle, AlertCircle } from "lucide-react";
 
 export default function StudentAttendance() {
@@ -12,7 +12,7 @@ export default function StudentAttendance() {
 
     const fetchAttendance = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/attendance/my");
+            const res = await api.get("/attendance/my");
             setAttendance(res.data.data);
         } catch (err) {
             console.error(err);

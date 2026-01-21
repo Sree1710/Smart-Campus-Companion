@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -13,7 +13,7 @@ export default function ODRequests() {
 
     const fetchRequests = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/od/pending");
+            const res = await api.get("/od/pending");
             setRequests(res.data.data);
         } catch (err) {
             console.error(err);
@@ -22,7 +22,7 @@ export default function ODRequests() {
 
     const handleAction = async (id, status, remarks) => {
         try {
-            await axios.put(`http://localhost:5001/api/od/${id}`, { status, remarks });
+            await api.put(`/od/${id}`, { status, remarks });
             toast.success(`Request ${status}`);
             fetchRequests();
         } catch (err) {

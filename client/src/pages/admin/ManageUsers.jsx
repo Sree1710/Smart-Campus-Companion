@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import { User, Trash, Users } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -8,10 +8,11 @@ export default function ManageUsers() {
 
     const fetchUsers = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/users");
+            const res = await api.get("/users");
             setUsers(res.data.data);
         } catch (err) {
             console.error(err);
+
             toast.error("Failed to fetch users");
         }
     };
@@ -23,7 +24,7 @@ export default function ManageUsers() {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this user? This action cannot be undone.")) return;
         try {
-            await axios.delete(`http://localhost:5001/api/users/${id}`);
+            await api.delete(`/users/${id}`);
             toast.success("User Deleted");
             fetchUsers();
         } catch (err) {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 
 export default function ViewAttendance() {
@@ -15,7 +15,7 @@ export default function ViewAttendance() {
 
     const fetchClasses = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/academic/classes");
+            const res = await api.get("/academic/classes");
             setClasses(res.data.data);
         } catch (err) {
             console.error(err);
@@ -37,7 +37,7 @@ export default function ViewAttendance() {
             // For now, let's assume `getClassAttendance` returns everything or supports query.
             // Looking at `server/routes/core.js`: `get('/class/:classId', ...)`
 
-            const res = await axios.get(`http://localhost:5001/api/attendance/class/${selectedClass}?date=${date}`);
+            const res = await api.get(`/attendance/class/${selectedClass}?date=${date}`);
             setAttendanceData(res.data.data); // Assuming backend returns list of records
 
             if (res.data.data.length === 0) {

@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 export const AuthContext = createContext();
 
@@ -13,14 +13,13 @@ export const AuthProvider = ({ children }) => {
         const checkUser = async () => {
             const token = localStorage.getItem("token");
             if (token) {
-                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+                // Token is attached automatically by interceptor in utils/api.js
                 try {
-                    const res = await axios.get("http://localhost:5001/api/auth/me");
+                    const res = await api.get("/auth/me");
                     setUser(res.data.data);
                     setIsAuthenticated(true);
                 } catch (err) {
                     localStorage.removeItem("token");
-                    delete axios.defaults.headers.common["Authorization"];
                     setUser(null);
                     setIsAuthenticated(false);
                 }
@@ -33,11 +32,11 @@ export const AuthProvider = ({ children }) => {
     // Register
     const register = async (formData) => {
         try {
-            const res = await axios.post("http://localhost:5001/api/auth/register", formData);
+            const res = await api.post("/auth/register", formData);
             const { token, user: userData } = res.data;
 
             localStorage.setItem("token", token);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            // axios headers handled by interceptor
             setUser(userData);
             setIsAuthenticated(true);
             return { success: true };
@@ -49,11 +48,11 @@ export const AuthProvider = ({ children }) => {
     // Login
     const login = async (email, password) => {
         try {
-            const res = await axios.post("http://localhost:5001/api/auth/login", { email, password });
+            const res = await api.post("/auth/login", { email, password });
             const { token, user: userData } = res.data;
 
             localStorage.setItem("token", token);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            // axios headers handled by interceptor
             setUser(userData);
             setIsAuthenticated(true);
             return { success: true };
@@ -65,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     // Logout
     const logout = () => {
         localStorage.removeItem("token");
-        delete axios.defaults.headers.common["Authorization"];
+        // delete axios.defaults.headers.common["Authorization"]; // handled by interceptor (it reads per request)
         setUser(null);
         setIsAuthenticated(false);
     };

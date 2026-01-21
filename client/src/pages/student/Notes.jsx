@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import { Plus, Pin, Trash2, X } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -14,7 +14,7 @@ export default function Notes() {
 
     const fetchNotes = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/notes");
+            const res = await api.get("/notes");
             setNotes(res.data.data);
         } catch (err) {
             console.error(err);
@@ -24,7 +24,7 @@ export default function Notes() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5001/api/notes", formData);
+            await api.post("/notes", formData);
             toast.success("Note created");
             setShowModal(false);
             fetchNotes();
@@ -37,7 +37,7 @@ export default function Notes() {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this note?")) return;
         try {
-            await axios.delete(`http://localhost:5001/api/notes/${id}`);
+            await api.delete(`/notes/${id}`);
             toast.success("Note deleted");
             fetchNotes();
         } catch (err) {
